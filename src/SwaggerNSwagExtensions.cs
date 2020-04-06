@@ -1,4 +1,4 @@
-//æœ€åä¿®æ”¹ 2020-03-13
+//×îºóĞŞ¸Ä 2020-03-13
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +19,8 @@ namespace SwaggerExtensions
         public const string DefaultSecurityName = "DefaultAuth";
         public static IServiceCollection AddNSwagSwagger(this IServiceCollection services, NSwagConfig config = null)
         {
-            services.AddSingleton<IOperationProcessor>(new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor(config?.OperationSecurity?.SecurityName ?? DefaultSecurityName));//æˆæƒæ§åˆ¶
-            services.AddSingleton<IDocumentProcessor, DocumentControllerTagsProcessor>();//æ§åˆ¶å™¨æ³¨é‡Š
+            services.AddSingleton<IOperationProcessor>(new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor(config?.OperationSecurity?.SecurityName ?? DefaultSecurityName));//ÊÚÈ¨¿ØÖÆ
+            services.AddSingleton<IDocumentProcessor, DocumentControllerTagsProcessor>();//¿ØÖÆÆ÷×¢ÊÍ
             services
                 // Register an OpenAPI 3.0 document generator
                 .AddOpenApiDocument((document, sp) =>
@@ -87,9 +87,9 @@ namespace SwaggerExtensions
 
         private static void _settings(AspNetCoreOpenApiDocumentGeneratorSettings document, NSwagConfig config, string versionPrefix)
         {
-            document.Title = config?.Title ?? "WebApi æ–‡æ¡£";
+            document.Title = config?.Title ?? "WebApi ÎÄµµ";
             document.Description = config?.Description
-//@"å¤©ä½¿é¡¹ç›® API æ–‡æ¡£,å¯ä»¥ä½¿ç”¨API Keyæ¥æˆæƒæµ‹è¯•ã€‚
+//@"ÌìÊ¹ÏîÄ¿ API ÎÄµµ,¿ÉÒÔÊ¹ÓÃAPI KeyÀ´ÊÚÈ¨²âÊÔ¡£
 
 //# Introduction
 //This API is documented in **OpenAPI format** and is based on
@@ -118,7 +118,7 @@ namespace SwaggerExtensions
                 f.Info.TermsOfService = config?.TermsOfService;
                 f.Info.Contact = config?.Contact;
                 f.Info.License = config?.License;
-                f.ExternalDocumentation = new OpenApiExternalDocumentation { Description = "ReDoc æ–‡æ¡£", Url = "/redoc/" + document.DocumentName };
+                f.ExternalDocumentation = new OpenApiExternalDocumentation { Description = "ReDoc ÎÄµµ", Url = "/redoc/" + document.DocumentName };
 
                 f.Info.ExtensionData = config?.ExtensionData;
                 //f.Info.TermsOfService = "http://www.weberp.com.cn";
@@ -136,37 +136,37 @@ namespace SwaggerExtensions
                 config?.OperationSecurity.Apply(document);
             }
 
-            #region åŸºæœ¬èº«ä»½è®¤è¯
+            #region »ù±¾Éí·İÈÏÖ¤
             //document.AddSecurity("Basic", new[] { "skoruba_identity_admin_api" }, new NSwag.OpenApiSecurityScheme
             //{
-            //    Description = $"Basic æˆæƒæ¨¡å¼",
+            //    Description = $"Basic ÊÚÈ¨Ä£Ê½",
             //    Type = NSwag.OpenApiSecuritySchemeType.Basic
             //});
-            ////è²Œä¼¼åŒBasicæ¨¡å¼
+            ////Ã²ËÆÍ¬BasicÄ£Ê½
             ////document.AddSecurity("Http", new[] { "skoruba_identity_admin_api" }, new NSwag.OpenApiSecurityScheme
             ////{
-            ////    Description = $"Http æˆæƒæ¨¡å¼",
+            ////    Description = $"Http ÊÚÈ¨Ä£Ê½",
             ////    Type = NSwag.OpenApiSecuritySchemeType.Http
             ////});
             //document.AddSecurity("ApiKey_Header"/*, new[] { "skoruba_identity_admin_api" }*/, new NSwag.OpenApiSecurityScheme
             //{
-            //    Description = $"ApiKey æˆæƒæ¨¡å¼,In å¯é€‰ Header æˆ– Query",
+            //    Description = $"ApiKey ÊÚÈ¨Ä£Ê½,In ¿ÉÑ¡ Header »ò Query",
             //    Name = "Authorization",
             //    Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
             //    In = NSwag.OpenApiSecurityApiKeyLocation.Header
-            //    //æˆ–è€…
+            //    //»òÕß
             //    //In = NSwag.OpenApiSecurityApiKeyLocation.Query
             //});
             //document.AddSecurity("ApiKey_Query", new[] { "skoruba_identity_admin_api" }, new NSwag.OpenApiSecurityScheme
             //{
-            //    Description = $"ApiKey æˆæƒæ¨¡å¼,In å¯é€‰ Header æˆ– Query",
+            //    Description = $"ApiKey ÊÚÈ¨Ä£Ê½,In ¿ÉÑ¡ Header »ò Query",
             //    Name = "Authorization",
             //    Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
             //    //In = NSwag.OpenApiSecurityApiKeyLocation.Header
-            //    //æˆ–è€…
+            //    //»òÕß
             //    In = NSwag.OpenApiSecurityApiKeyLocation.Query
             //});
-            #endregion åŸºæœ¬èº«ä»½è®¤è¯
+            #endregion »ù±¾Éí·İÈÏÖ¤
             #region OAuth2
             //var rsss = new System.Collections.Generic.Dictionary<string, string>
             //{
@@ -175,7 +175,7 @@ namespace SwaggerExtensions
 
             //document.AddSecurity("OAuth2_Implicit", new[] { "skoruba_identity_admin_api" }, new NSwag.OpenApiSecurityScheme
             //{
-            //    Description = $"OAuth2_Implicit ç®€åŒ–æ¨¡å¼,\r\næµ‹è¯•ClientId:'Test_Implicit_Development'",
+            //    Description = $"OAuth2_Implicit ¼ò»¯Ä£Ê½,\r\n²âÊÔClientId:'Test_Implicit_Development'",
             //    Type = NSwag.OpenApiSecuritySchemeType.OAuth2,
             //    Flow = NSwag.OpenApiOAuth2Flow.Implicit,
             //    Scopes = rsss,
@@ -184,7 +184,7 @@ namespace SwaggerExtensions
 
             //document.AddSecurity("OAuth2_Implicit", new[] { "skoruba_identity_admin_api" }, new NSwag.OpenApiSecurityScheme
             //{
-            //    Description = $"OAuth2_Implicit ç®€åŒ–æ¨¡å¼,\r\næµ‹è¯•ClientId:'Test_Implicit_Development'",
+            //    Description = $"OAuth2_Implicit ¼ò»¯Ä£Ê½,\r\n²âÊÔClientId:'Test_Implicit_Development'",
             //    Type = NSwag.OpenApiSecuritySchemeType.OAuth2,
             //    Flow = NSwag.OpenApiOAuth2Flow.Implicit,
             //    Scopes = rsss,
@@ -192,7 +192,7 @@ namespace SwaggerExtensions
             //});
             //document.AddSecurity("OAuth2_Password", new[] { "skoruba_identity_admin_api" }, new NSwag.OpenApiSecurityScheme
             //{
-            //    Description = $"OAuth2_Password å¯†ç æ¨¡å¼,\r\næµ‹è¯•ClientId:'Test_Password_Development'\r\næµ‹è¯•ClientSecret:'test'",
+            //    Description = $"OAuth2_Password ÃÜÂëÄ£Ê½,\r\n²âÊÔClientId:'Test_Password_Development'\r\n²âÊÔClientSecret:'test'",
             //    Type = NSwag.OpenApiSecuritySchemeType.OAuth2,
             //    Flow = NSwag.OpenApiOAuth2Flow.Password,
             //    Scopes = rsss,
@@ -200,7 +200,7 @@ namespace SwaggerExtensions
             //});
             //document.AddSecurity("OAuth2_Application", new[] { "skoruba_identity_admin_api" }, new NSwag.OpenApiSecurityScheme
             //{
-            //    Description = $"OAuth2_Application å®¢æˆ·ç«¯æ¨¡å¼,\r\næµ‹è¯•ClientId:'Test_ClientCredentials_Development'\r\næµ‹è¯•ClientSecret:'test'",
+            //    Description = $"OAuth2_Application ¿Í»§¶ËÄ£Ê½,\r\n²âÊÔClientId:'Test_ClientCredentials_Development'\r\n²âÊÔClientSecret:'test'",
             //    Type = NSwag.OpenApiSecuritySchemeType.OAuth2,
             //    Flow = NSwag.OpenApiOAuth2Flow.Application,
             //    Scopes = rsss,
@@ -208,7 +208,7 @@ namespace SwaggerExtensions
             //});
             //document.AddSecurity("OAuth2_AccessCode", new[] { "skoruba_identity_admin_api" }, new NSwag.OpenApiSecurityScheme
             //{
-            //    Description = $"OAuth2_AccessCode æˆæƒç æ¨¡å¼\r\næµ‹è¯•ClientId:'Test_AuthorizationCode_Development'\r\næµ‹è¯•ClientSecret:'test'",
+            //    Description = $"OAuth2_AccessCode ÊÚÈ¨ÂëÄ£Ê½\r\n²âÊÔClientId:'Test_AuthorizationCode_Development'\r\n²âÊÔClientSecret:'test'",
             //    Type = NSwag.OpenApiSecuritySchemeType.OAuth2,
             //    Flow = NSwag.OpenApiOAuth2Flow.AccessCode,
             //    Scopes = rsss,
@@ -220,7 +220,7 @@ namespace SwaggerExtensions
             //document.AddSecurity("OAuth2_Bearer", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
             //{
             //    Type = NSwag.OpenApiSecuritySchemeType.OAuth2,
-            //    Description = $"OAuth2_Implicit æˆæƒæ¨¡å¼,\r\næµ‹è¯•ClientId:'Test_Implicit_Development'",
+            //    Description = $"OAuth2_Implicit ÊÚÈ¨Ä£Ê½,\r\n²âÊÔClientId:'Test_Implicit_Development'",
             //    Flow = NSwag.OpenApiOAuth2Flow.Implicit,
             //    Flows = new NSwag.OpenApiOAuthFlows()
             //    {
@@ -236,7 +236,7 @@ namespace SwaggerExtensions
         }
     }
     /// <summary>
-    /// è§£å†³apiæ§åˆ¶å™¨æ³¨é‡Šæ˜¾ç¤ºçš„é—®é¢˜
+    /// ½â¾öapi¿ØÖÆÆ÷×¢ÊÍÏÔÊ¾µÄÎÊÌâ
     /// </summary>
     public class DocumentControllerTagsProcessor : IDocumentProcessor
     {
