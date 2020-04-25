@@ -35,5 +35,17 @@ namespace example.Controllers
             })
             .ToArray();
         }
+
+        [HttpDelete]
+        [ActionName("test")]
+        public Test Delete()
+        {
+            return Test.T1;
+        }
+
+        public enum Test
+        {
+            T1,T2,T3
+        }
     }
 }

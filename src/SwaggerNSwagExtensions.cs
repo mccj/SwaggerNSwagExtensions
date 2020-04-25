@@ -23,12 +23,12 @@ namespace SwaggerExtensions
             services.AddSingleton<IDocumentProcessor, DocumentControllerTagsProcessor>();//¿ØÖÆÆ÷×¢ÊÍ
             services
                 // Register an OpenAPI 3.0 document generator
-                .AddOpenApiDocument((document, sp) =>
-                {
-                    _settings(document, config, "openapi/");
-                    //document.DocumentName = "openapi/" + document.Version;
-                    //document.ApiGroupNames = new[] { "v1" };
-                })
+                //.AddOpenApiDocument((document, sp) =>
+                //{
+                //    _settings(document, config, "openapi/");
+                //    //document.DocumentName = "openapi/" + document.Version;
+                //    //document.ApiGroupNames = new[] { "v1" };
+                //})
                 // Register a Swagger 2.0 document generator
                 .AddSwaggerDocument((document, sp) =>
                 {
@@ -69,6 +69,14 @@ namespace SwaggerExtensions
                 //if (!string.IsNullOrWhiteSpace(path))
                 //    config.Path = path;
                 config.TransformToExternalPath = transformToExternalPath;
+
+
+                config.ValidateSpecification = true;
+                //config.EnableTryItOut = false;//ÊÇ·ñÏÔÊ¾²âÊÔ°´Å¥
+                //config.CustomHeadContent = "";
+
+                //config.OAuth2Client = new NSwag.AspNetCore.OAuth2ClientSettings() { 
+                //};
             });
 
             app.UseReDoc(config =>
@@ -104,10 +112,17 @@ namespace SwaggerExtensions
 
 //"
 ;
-            document.Version = config?.Version ?? "1.0.0";
-            document.DocumentName = versionPrefix + (config?.Version ?? "v1");
+            var version = config?.Version ?? "v1";
+            if (string.IsNullOrWhiteSpace(config?.PathPrefix) && config?.ApiGroupNames?.Length == 1)
+                config.PathPrefix = config.ApiGroupNames.FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(config?.PathPrefix))
+                config.PathPrefix = config.PathPrefix.Trim('/') + "/";
+
+            document.Version = version;
+            document.DocumentName = versionPrefix + config?.PathPrefix + version;
             document.ApiGroupNames = config?.ApiGroupNames;
 
+            //document.DefaultEnumHandling = NJsonSchema.Generation.EnumHandling.CamelCaseString;
             document.GenerateExamples = true;
             document.GenerateEnumMappingDescription = true;
 
@@ -376,6 +391,7 @@ namespace SwaggerExtensions
 
     public class NSwagConfig : NJsonSchema.JsonExtensionObject
     {
+        public string PathPrefix { get; set; }
         public string Title { get; set; }
         public string Version { get; set; }
         public string[] ApiGroupNames { get; set; }
