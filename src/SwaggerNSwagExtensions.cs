@@ -23,12 +23,13 @@ namespace SwaggerExtensions
 
             services.AddSingleton<IOperationProcessor>(new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor(config?.OperationSecurity?.SecurityName ?? DefaultSecurityName));//授权控制
             services.AddSingleton<IDocumentProcessor, DocumentControllerTagsProcessor>();//控制器注释
+
             if (config.ShowOpenApi)
             {
                 // Register an OpenAPI 3.0 document generator
                 services.AddOpenApiDocument((document, sp) =>
                     {
-                        _settings(document, config, "openapi/");
+                        _settings(sp, document, config, "openapi/");
                         //document.DocumentName = "openapi/" + document.Version;
                         //document.ApiGroupNames = new[] { "v1" };
                     });
@@ -38,7 +39,7 @@ namespace SwaggerExtensions
                 // Register a Swagger 2.0 document generator
                 services.AddSwaggerDocument((document, sp) =>
                 {
-                    _settings(document, config, "swagger/");
+                    _settings(sp, document, config, "swagger/");
                     //document.DocumentName = "swagger/" + document.Version;
                 });
             }
@@ -99,7 +100,7 @@ namespace SwaggerExtensions
         }
 
 
-        private static void _settings(AspNetCoreOpenApiDocumentGeneratorSettings document, NSwagConfig config, string versionPrefix)
+        private static void _settings(System.IServiceProvider sp, AspNetCoreOpenApiDocumentGeneratorSettings document, NSwagConfig config, string versionPrefix)
         {
             document.Title = config?.Title ?? "WebApi 文档";
             document.Description = config?.Description
@@ -132,6 +133,10 @@ namespace SwaggerExtensions
             document.GenerateExamples = true;
             document.GenerateEnumMappingDescription = true;
 
+            //var dfdf = sp.GetService<Microsoft.Extensions.Options.IOptions<JsonOptions>>().Value;
+            //dfdf.JsonSerializerOptions.Converters.Any(f => f is System.Text.Json.Serialization.JsonStringEnumConverter)
+            if (config?.DefaultEnumHandling != null)
+                document.DefaultEnumHandling = config.DefaultEnumHandling.Value;
 
 
             document.PostProcess = (f) =>
@@ -406,7 +411,8 @@ namespace SwaggerExtensions
         public OpenApiContact Contact { get; set; }
         public OpenApiLicense License { get; set; }
         public IOperationSecurity OperationSecurity { get; set; }
-        public bool ShowOpenApi { get; set; } = true;
-        public bool ShowSwagger { get; set; } = false;
+        public bool ShowOpenApi { get; set; } = false;
+        public bool ShowSwagger { get; set; } = true;
+        public NJsonSchema.Generation.EnumHandling? DefaultEnumHandling { get; set; }
     }
 }
