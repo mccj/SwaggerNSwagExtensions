@@ -29,7 +29,7 @@ namespace example
             services.AddControllers();
             services.AddNSwagSwagger(new NSwagConfig { ApiGroupNames = new[] { "test_V1" } });
             services.AddNSwagSwagger(new NSwagConfig { ApiGroupNames = new[] { "test_V2" } });
-            services.AddNSwagSwagger(new NSwagConfig { ApiGroupNames = new[] { "" } });
+            services.AddNSwagSwagger(new NSwagConfig { });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
