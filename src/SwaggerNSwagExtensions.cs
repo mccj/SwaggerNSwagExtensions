@@ -45,12 +45,30 @@ namespace SwaggerExtensions
             }
             return services;
         }
-        public static IApplicationBuilder UseNSwagSwaggerUI(this IApplicationBuilder app)
+        public static IApplicationBuilder UseNSwagSwaggerUI(this IApplicationBuilder app, string pathMatch = null)
         {
+            if (string.IsNullOrWhiteSpace(pathMatch))
+            {
+                pathMatch = "/";
+            }
+            if (!pathMatch.StartsWith("/"))
+            {
+                throw new System.Exception("pathMatch 必须 “/”开头");
+            }
+            pathMatch = pathMatch.TrimEnd('/', ' ', '\t');
+            //app.UseApiverse(config =>
+            //{
+            //    config.Path = pathMatch + "/apiverse";
+
+            //    //config.CompareWith = "local:local:0:0:0:latest";
+            //    config.CompareWith = "a:a:27:25:15:latest";
+            //    //config.ApiverseUrl = "https://localhost:5001";
+            //});
             app.UseOpenApi(config =>
             {
                 //if (!string.IsNullOrWhiteSpace(path))
                 //    config.Path = path;
+                config.Path = pathMatch + "/swagger/{documentName}/swagger.json";
 
                 config.PostProcess = (document, request) =>
                 {
@@ -75,6 +93,9 @@ namespace SwaggerExtensions
             {
                 //if (!string.IsNullOrWhiteSpace(path))
                 //    config.Path = path;
+                config.Path = pathMatch + "/swagger";
+                config.DocumentPath = pathMatch + "/swagger/{documentName}/swagger.json";
+
                 config.TransformToExternalPath = transformToExternalPath;
 
 
@@ -90,8 +111,8 @@ namespace SwaggerExtensions
             {
                 //if (!string.IsNullOrWhiteSpace(path))
                 //    config.Path = path;
-
-                config.Path = "/redoc/{documentName}";
+                config.Path = pathMatch + "/redoc/{documentName}";
+                config.DocumentPath = pathMatch + "/swagger/{documentName}/swagger.json";
                 config.TransformToExternalPath = transformToExternalPath;
             });
 
@@ -144,7 +165,7 @@ namespace SwaggerExtensions
                 f.Info.TermsOfService = config?.TermsOfService;
                 f.Info.Contact = config?.Contact;
                 f.Info.License = config?.License;
-                f.ExternalDocumentation = new OpenApiExternalDocumentation { Description = "ReDoc 文档", Url = "/redoc/" + document.DocumentName };
+                f.ExternalDocumentation = new OpenApiExternalDocumentation { Description = "ReDoc 文档", Url = "../redoc/" + document.DocumentName };
 
                 f.Info.ExtensionData = config?.ExtensionData;
                 //f.Info.TermsOfService = "http://www.weberp.com.cn";
