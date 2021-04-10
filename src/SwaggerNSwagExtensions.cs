@@ -390,7 +390,7 @@ namespace SwaggerExtensions
         }
         public override void Apply(AspNetCoreOpenApiDocumentGeneratorSettings document)
         {
-            var _in = System.Enum.Parse<OpenApiSecurityApiKeyLocation>(this?.Location.ToString());
+            var _in = EnumEx.Parse<OpenApiSecurityApiKeyLocation>(this?.Location.ToString());
             document.AddSecurity(this?.SecurityName ?? SwaggerNSwagExtensions.DefaultSecurityName/*, new[] { "skoruba_identity_admin_api" }*/, new NSwag.OpenApiSecurityScheme
             {
                 Description = this?.Description,
@@ -411,7 +411,7 @@ namespace SwaggerExtensions
         }
         public override void Apply(AspNetCoreOpenApiDocumentGeneratorSettings document)
         {
-            var _in = System.Enum.Parse<OpenApiSecurityApiKeyLocation>(this?.Location.ToString());
+            var _in = EnumEx.Parse<OpenApiSecurityApiKeyLocation>(this?.Location.ToString());
             document.AddSecurity(this?.SecurityName ?? SwaggerNSwagExtensions.DefaultSecurityName/*, new[] { "skoruba_identity_admin_api" }*/, new NSwag.OpenApiSecurityScheme
             {
                 Description = this?.Description,
