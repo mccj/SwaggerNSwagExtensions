@@ -434,6 +434,7 @@ namespace SwaggerExtensions
         public IOperationSecurity OperationSecurity { get; set; }
         public bool ShowOpenApi { get; set; } = false;
         public bool ShowSwagger { get; set; } = true;
+        [System.Obsolete("Use SerializerSettings directly instead. In NSwag.AspNetCore the property is set automatically.")]
         public NJsonSchema.Generation.EnumHandling? DefaultEnumHandling { get; set; }
     }
 }
