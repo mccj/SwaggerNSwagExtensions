@@ -17,14 +17,14 @@ namespace SwaggerExtensions
     public static class SwaggerNSwagExtensions
     {
         public const string DefaultSecurityName = "DefaultAuth";
-        public static IServiceCollection AddNSwagSwagger(this IServiceCollection services, NSwagConfig config = null)
+        public static IServiceCollection AddNSwagSwagger(this IServiceCollection services, NSwagConfig? config = null)
         {
             config = config ?? new NSwagConfig { };
 
             services.AddSingleton<IOperationProcessor>(new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor(config?.OperationSecurity?.SecurityName ?? DefaultSecurityName));//授权控制
             services.AddSingleton<IDocumentProcessor, DocumentControllerTagsProcessor>();//控制器注释
 
-            if (config.ShowOpenApi)
+            if (config!.ShowOpenApi)
             {
                 // Register an OpenAPI 3.0 document generator
                 services.AddOpenApiDocument((document, sp) =>
@@ -34,7 +34,7 @@ namespace SwaggerExtensions
                         //document.ApiGroupNames = new[] { "v1" };
                     });
             }
-            if (config.ShowSwagger)
+            if (config!.ShowSwagger)
             {
                 // Register a Swagger 2.0 document generator
                 services.AddSwaggerDocument((document, sp) =>
@@ -45,17 +45,17 @@ namespace SwaggerExtensions
             }
             return services;
         }
-        public static IApplicationBuilder UseNSwagSwaggerUI(this IApplicationBuilder app, string pathMatch = null)
+        public static IApplicationBuilder UseNSwagSwaggerUI(this IApplicationBuilder app, string? pathMatch = null)
         {
             if (string.IsNullOrWhiteSpace(pathMatch))
             {
                 pathMatch = "/";
             }
-            if (!pathMatch.StartsWith("/"))
+            if (!pathMatch!.StartsWith("/"))
             {
                 throw new System.Exception("pathMatch 必须 “/”开头");
             }
-            pathMatch = pathMatch.TrimEnd('/', ' ', '\t');
+            pathMatch = pathMatch!.TrimEnd('/', ' ', '\t');
             //app.UseApiverse(config =>
             //{
             //    config.Path = pathMatch + "/apiverse";
@@ -144,7 +144,7 @@ namespace SwaggerExtensions
             if (string.IsNullOrWhiteSpace(config?.PathPrefix) && config?.ApiGroupNames?.Length == 1)
                 config.PathPrefix = config.ApiGroupNames.FirstOrDefault();
             if (!string.IsNullOrWhiteSpace(config?.PathPrefix))
-                config.PathPrefix = config.PathPrefix.Trim('/') + "/";
+                config!.PathPrefix = config!.PathPrefix!.Trim('/') + "/";
 
             document.Version = version;
             document.DocumentName = versionPrefix + config?.PathPrefix + version;
@@ -367,16 +367,16 @@ namespace SwaggerExtensions
         internal class ReDocCodeSample
         {
             [JsonProperty("lang")]
-            public string Language { get; set; }
+            public string? Language { get; set; }
 
             [JsonProperty("source")]
-            public string Source { get; set; }
+            public string? Source { get; set; }
         }
     }
     public abstract class IOperationSecurity
     {
-        public string SecurityName { get; set; }
-        public virtual string Description { get; set; }
+        public string? SecurityName { get; set; }
+        public virtual string? Description { get; set; }
         public abstract void Apply(AspNetCoreOpenApiDocumentGeneratorSettings document);
     }
     public class ApiKeySecurityScheme : IOperationSecurity
@@ -390,7 +390,7 @@ namespace SwaggerExtensions
         }
         public override void Apply(AspNetCoreOpenApiDocumentGeneratorSettings document)
         {
-            var _in = EnumEx.Parse<OpenApiSecurityApiKeyLocation>(this?.Location.ToString());
+            var _in = EnumEx.Parse<OpenApiSecurityApiKeyLocation>(this.Location.ToString());
             document.AddSecurity(this?.SecurityName ?? SwaggerNSwagExtensions.DefaultSecurityName/*, new[] { "skoruba_identity_admin_api" }*/, new NSwag.OpenApiSecurityScheme
             {
                 Description = this?.Description,
@@ -411,7 +411,7 @@ namespace SwaggerExtensions
         }
         public override void Apply(AspNetCoreOpenApiDocumentGeneratorSettings document)
         {
-            var _in = EnumEx.Parse<OpenApiSecurityApiKeyLocation>(this?.Location.ToString());
+            var _in = EnumEx.Parse<OpenApiSecurityApiKeyLocation>(this.Location.ToString());
             document.AddSecurity(this?.SecurityName ?? SwaggerNSwagExtensions.DefaultSecurityName/*, new[] { "skoruba_identity_admin_api" }*/, new NSwag.OpenApiSecurityScheme
             {
                 Description = this?.Description,
@@ -423,15 +423,15 @@ namespace SwaggerExtensions
 
     public class NSwagConfig : NJsonSchema.JsonExtensionObject
     {
-        public string PathPrefix { get; set; }
-        public string Title { get; set; }
-        public string Version { get; set; }
-        public string[] ApiGroupNames { get; set; }
-        public string Description { get; set; }
-        public string TermsOfService { get; set; }
-        public OpenApiContact Contact { get; set; }
-        public OpenApiLicense License { get; set; }
-        public IOperationSecurity OperationSecurity { get; set; }
+        public string? PathPrefix { get; set; }
+        public string? Title { get; set; }
+        public string? Version { get; set; }
+        public string[]? ApiGroupNames { get; set; }
+        public string? Description { get; set; }
+        public string? TermsOfService { get; set; }
+        public OpenApiContact? Contact { get; set; }
+        public OpenApiLicense? License { get; set; }
+        public IOperationSecurity? OperationSecurity { get; set; }
         public bool ShowOpenApi { get; set; } = false;
         public bool ShowSwagger { get; set; } = true;
         [System.Obsolete("Use SerializerSettings directly instead. In NSwag.AspNetCore the property is set automatically.")]

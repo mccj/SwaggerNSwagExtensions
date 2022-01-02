@@ -14,11 +14,11 @@ using System.Linq;
 
 namespace SwaggerExtensions
 {
-    public static class EnumEx
+    static class EnumEx
     {
         public static TEnum Parse<TEnum>(string value) where TEnum : struct
         {
-           return (TEnum)System.Enum.Parse(typeof(TEnum), value);
+            return (TEnum)System.Enum.Parse(typeof(TEnum), value);
         }
     }
 }
