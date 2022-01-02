@@ -80,6 +80,11 @@ namespace SwaggerExtensions
                         document.BasePath = request.Headers["X-External-Path"].First();
                     }
                 };
+
+                //config.CreateDocumentCacheKey = f =>
+                //{
+                //    return f.Path.Value;
+                //};
             });
 
             var transformToExternalPath = new System.Func<string, Microsoft.AspNetCore.Http.HttpRequest, string>((internalUiRoute, request) =>
@@ -116,7 +121,6 @@ namespace SwaggerExtensions
                 config.TransformToExternalPath = transformToExternalPath;
             });
 
-            //app.UseApiverse(config=> { });
             return app;
         }
 
@@ -125,21 +129,21 @@ namespace SwaggerExtensions
         {
             document.Title = config?.Title ?? "WebApi 文档";
             document.Description = config?.Description
-//@"天使项目 API 文档,可以使用API Key来授权测试。
+            //@"天使项目 API 文档,可以使用API Key来授权测试。
 
-//# Introduction
-//This API is documented in **OpenAPI format** and is based on
+            //# Introduction
+            //This API is documented in **OpenAPI format** and is based on
 
-//# Authentication
+            //# Authentication
 
-// Petstore offers two forms of authentication: **OpenAPI format**
-//      - API Key
-//      - OAuth2
-//    OAuth2 - an open protocol to allow secure authorization in a simple
-//    and standard method from web, mobile and desktop applications.
+            // Petstore offers two forms of authentication: **OpenAPI format**
+            //      - API Key
+            //      - OAuth2
+            //    OAuth2 - an open protocol to allow secure authorization in a simple
+            //    and standard method from web, mobile and desktop applications.
 
-//"
-;
+            //"
+            ;
             var version = config?.Version ?? "v1";
             if (string.IsNullOrWhiteSpace(config?.PathPrefix) && config?.ApiGroupNames?.Length == 1)
                 config.PathPrefix = config.ApiGroupNames.FirstOrDefault();
@@ -159,20 +163,25 @@ namespace SwaggerExtensions
             if (config?.DefaultEnumHandling != null)
                 document.DefaultEnumHandling = config.DefaultEnumHandling.Value;
 
+            //        var linkDescription = @"# 相关文档链接
+            //[ReDoc 文档](/redoc/" + document.DocumentName + @")
+
+            //";
+            //        document.Description = linkDescription + config?.Description;
 
             document.PostProcess = (f) =>
             {
                 f.Info.TermsOfService = config?.TermsOfService;
                 f.Info.Contact = config?.Contact;
                 f.Info.License = config?.License;
-                f.ExternalDocumentation = new OpenApiExternalDocumentation { Description = "ReDoc 文档", Url = "../redoc/" + document.DocumentName };
+                f.ExternalDocumentation = new OpenApiExternalDocumentation { Description = "ReDoc 文档", Url = "/redoc/" + document.DocumentName };
 
                 f.Info.ExtensionData = config?.ExtensionData;
                 //f.Info.TermsOfService = "http://www.weberp.com.cn";
                 //f.Info.Contact = new NSwag.OpenApiContact { Email = "mccj@weberp.com.cn", Name = "The KeWei Team", Url = "http://www.weberp.com.cn" };
                 //f.Info.License = new NSwag.OpenApiLicense { Name = "Apache 2.0", Url = "http://www.apache.org/licenses/LICENSE-2.0.html" };
-
-                //f.Info.ExtensionData = new Dictionary<string, object>();
+                //if (f.Info.ExtensionData == null)
+                //    f.Info.ExtensionData = new Dictionary<string, object>();
                 //f.Info.ExtensionData.Add("x-logo", new { url = "https://redocly.github.io/redoc/petstore-logo.png", altText = "Petstore logo" });
 
                 //f.ExternalDocumentation = new OpenApiExternalDocumentation { Description = "ReDoc For {documentName}", Url = "/redoc/{documentName}" };
@@ -291,9 +300,11 @@ namespace SwaggerExtensions
         {
             foreach (var controllerType in context.ControllerTypes)
             {
+                var name = GetControllerName(controllerType);
+                if (context.Document.Tags.Any(f => f.Name == name)) return;
                 context.Document.Tags.Add(new NSwag.OpenApiTag
                 {
-                    Name = GetControllerName(controllerType),
+                    Name = name,
                     Description = controllerType.GetXmlDocsSummary()
                     //ExternalDocumentation=new NSwag.OpenApiExternalDocumentation { Url= "http://swagger.io", Description= "Find out more about our store" }
                 });
@@ -434,7 +445,28 @@ namespace SwaggerExtensions
         public IOperationSecurity? OperationSecurity { get; set; }
         public bool ShowOpenApi { get; set; } = false;
         public bool ShowSwagger { get; set; } = true;
+        public XLogo? Logo
+        {
+            get
+            {
+                if (this.ExtensionData != null && this.ExtensionData.ContainsKey("x-logo"))
+                    return this.ExtensionData["x-logo"] as XLogo;
+                else
+                    return null;
+            }
+            set
+            {
+                if (this.ExtensionData == null) this.ExtensionData = new Dictionary<string, object>();
+                this.ExtensionData["x-logo"] = value;
+            }
+        }
         [System.Obsolete("Use SerializerSettings directly instead. In NSwag.AspNetCore the property is set automatically.")]
         public NJsonSchema.Generation.EnumHandling? DefaultEnumHandling { get; set; }
+    }
+    public class XLogo : NJsonSchema.JsonExtensionObject
+    {
+        public string? altText { get; set; }
+        public string? url { get; set; } = "https://redocly.github.io/redoc/petstore-logo.png";
+
     }
 }

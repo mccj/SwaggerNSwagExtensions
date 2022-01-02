@@ -27,7 +27,7 @@ namespace example
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddNSwagSwagger(new NSwagConfig { ApiGroupNames = new[] { "test_V1" } });
+            services.AddNSwagSwagger(new NSwagConfig { ApiGroupNames = new[] { "test_V1" }, Logo=new XLogo() });
             services.AddNSwagSwagger(new NSwagConfig { ApiGroupNames = new[] { "test_V2" } });
             services.AddNSwagSwagger(new NSwagConfig { });
         }
