@@ -13,8 +13,16 @@
 		<Authors>mccj</Authors>
 		<PackageProjectUrl>https://github.com/mccj/SwaggerNSwagExtensions</PackageProjectUrl>
 		<PackageTags>Swagger,NSwag,OpenAPI,AspNetCore</PackageTags>
+		<RepositoryUrl>https://github.com/mccj/SwaggerNSwagExtensions.git</RepositoryUrl>
+		<PackageIcon>Icon.png</PackageIcon>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="NSwag.AspNetCore" Version="13.15.5" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Icon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 </Project>
