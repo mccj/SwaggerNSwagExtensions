@@ -123,8 +123,16 @@ namespace SwaggerExtensions
 
             return app;
         }
-
-
+#if NETCOREAPP3_0_OR_GREATER
+        public static void UseNSwagSwaggerUI(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder builder, string? pathMatch = null)
+        {
+            //ApplicationBuilder = { Microsoft.AspNetCore.Builder.ApplicationBuilder}
+            if (builder == null) { throw new System.ArgumentNullException(nameof(builder)); }
+            var app = builder.TryGetPropertyValue<IApplicationBuilder>("ApplicationBuilder");
+            if (app == null) { throw new System.ArgumentNullException(nameof(ApplicationBuilder)); }
+            app.UseNSwagSwaggerUI(pathMatch);
+        }
+#endif
         private static void _settings(System.IServiceProvider sp, AspNetCoreOpenApiDocumentGeneratorSettings document, NSwagConfig config, string versionPrefix)
         {
             document.Title = config?.Title ?? "WebApi 文档";

@@ -42,7 +42,7 @@ namespace example
 
             //app.UseHttpsRedirection();
 
-            app.UseNSwagSwaggerUI();
+            //app.UseNSwagSwaggerUI();
 
             app.UseRouting();
 
@@ -50,6 +50,7 @@ namespace example
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.UseNSwagSwaggerUI();
                 endpoints.MapControllers();
             });
         }
