@@ -1,5 +1,6 @@
 //最后修改 2020-03-13
 
+using IGeekFan.AspNetCore.Knife4jUI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Namotion.Reflection;
@@ -20,7 +21,6 @@ namespace SwaggerExtensions
         public static IServiceCollection AddNSwagSwagger(this IServiceCollection services, NSwagConfig? config = null)
         {
             config = config ?? new NSwagConfig { };
-
             services.AddSingleton<IOperationProcessor>(new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor(config?.OperationSecurity?.SecurityName ?? DefaultSecurityName));//授权控制
             services.AddSingleton<IDocumentProcessor, DocumentControllerTagsProcessor>();//控制器注释
 
@@ -28,11 +28,11 @@ namespace SwaggerExtensions
             {
                 // Register an OpenAPI 3.0 document generator
                 services.AddOpenApiDocument((document, sp) =>
-                    {
-                        _settings(sp, document, config, "openapi/");
-                        //document.DocumentName = "openapi/" + document.Version;
-                        //document.ApiGroupNames = new[] { "v1" };
-                    });
+                {
+                    _settings(sp, document, config, "openapi/");
+                    //document.DocumentName = "openapi/" + document.Version;
+                    //document.ApiGroupNames = new[] { "v1" };
+                });
             }
             if (config!.ShowSwagger)
             {
@@ -45,11 +45,11 @@ namespace SwaggerExtensions
             }
             return services;
         }
-        public static IApplicationBuilder UseNSwagSwaggerUI(this IApplicationBuilder app, string? pathMatch = null)
+        public static IApplicationBuilder UseNSwagSwaggerUI(this IApplicationBuilder app, string? pathMatch = "/swagger")
         {
             if (string.IsNullOrWhiteSpace(pathMatch))
             {
-                pathMatch = "/";
+                pathMatch = "/swagger";
             }
             if (!pathMatch!.StartsWith("/"))
             {
@@ -68,7 +68,7 @@ namespace SwaggerExtensions
             {
                 //if (!string.IsNullOrWhiteSpace(path))
                 //    config.Path = path;
-                config.Path = pathMatch + "/swagger/{documentName}/swagger.json";
+                config.Path = pathMatch + "/{documentName}/swagger.json";
 
                 config.PostProcess = (document, request) =>
                 {
@@ -87,21 +87,34 @@ namespace SwaggerExtensions
                 //};
             });
 
-            var transformToExternalPath = new System.Func<string, Microsoft.AspNetCore.Http.HttpRequest, string>((internalUiRoute, request) =>
-            {
-                // The header X-External-Path is set in the nginx.conf file
-                var externalPath = request.Headers.ContainsKey("X-External-Path") ? request.Headers["X-External-Path"].First() : "";
-                return externalPath + internalUiRoute;
-            });
 
+            //var transformToExternalPath = new System.Func<string, System.Func<string, Microsoft.AspNetCore.Http.HttpRequest, string>>((name) =>
+            // {
+            //     return new System.Func<string, Microsoft.AspNetCore.Http.HttpRequest, string>((internalUiRoute, request) =>
+            //     {
+            //         // The header X-External-Path is set in the nginx.conf file
+            //         var externalPath = request.Headers.ContainsKey("X-External-Path") ? request.Headers["X-External-Path"].First() : "";
+            //         return name + externalPath + internalUiRoute;
+            //     });
+            // });
+
+            app.MapWhen(context => context.Request.Path == pathMatch || context.Request.Path == pathMatch + "/", appBuilder =>
+            {
+                appBuilder.Run(context =>
+                {
+                    context.Response.Redirect(pathMatch + "/Home");
+                    return System.Threading.Tasks.Task.CompletedTask;
+                });
+
+            });
             app.UseSwaggerUi3(config =>
             {
                 //if (!string.IsNullOrWhiteSpace(path))
                 //    config.Path = path;
-                config.Path = pathMatch + "/swagger";
-                config.DocumentPath = pathMatch + "/swagger/{documentName}/swagger.json";
+                config.Path = pathMatch + "/Home";
+                config.DocumentPath = pathMatch + "/{documentName}/swagger.json";
 
-                config.TransformToExternalPath = transformToExternalPath;
+                //config.TransformToExternalPath = transformToExternalPath("swagger");
 
 
                 config.ValidateSpecification = true;
@@ -112,14 +125,32 @@ namespace SwaggerExtensions
                 //};
             });
 
-            app.UseReDoc(config =>
+            app.UseReDocEx(config =>
             {
                 //if (!string.IsNullOrWhiteSpace(path))
                 //    config.Path = path;
                 config.Path = pathMatch + "/redoc/{documentName}";
-                config.DocumentPath = pathMatch + "/swagger/{documentName}/swagger.json";
-                config.TransformToExternalPath = transformToExternalPath;
+                config.DocumentPath = pathMatch + "/{documentName}/swagger.json";
+                //config.TransformToExternalPath = transformToExternalPath("redoc");
             });
+
+            app.UseKnife4UI(config =>
+            {
+                config.RoutePrefix = (pathMatch + "/Knife4UI").Trim('/');
+                var documentPath = "../{documentName}/swagger.json";
+
+                var registrations = app.ApplicationServices.GetServices<NSwag.AspNetCore.OpenApiDocumentRegistration>();
+                foreach (var item in registrations)
+                {
+                    config.SwaggerEndpoint(documentPath.Replace("{documentName}", item.DocumentName), item.DocumentName);
+                }
+            });
+
+            //app.UseRapiDocUI(c =>
+            //{
+            //    //c.RoutePrefix = "";
+            //    //c.SwaggerEndpoint("/swagger/v1/swagger.json");
+            //});
 
             return app;
         }
@@ -136,7 +167,8 @@ namespace SwaggerExtensions
         private static void _settings(System.IServiceProvider sp, AspNetCoreOpenApiDocumentGeneratorSettings document, NSwagConfig config, string versionPrefix)
         {
             document.Title = config?.Title ?? "WebApi 文档";
-            document.Description = config?.Description
+
+            //document.Description = config?.Description
             //@"天使项目 API 文档,可以使用API Key来授权测试。
 
             //# Introduction
@@ -171,18 +203,17 @@ namespace SwaggerExtensions
             if (config?.DefaultEnumHandling != null)
                 document.DefaultEnumHandling = config.DefaultEnumHandling.Value;
 
-            //        var linkDescription = @"# 相关文档链接
-            //[ReDoc 文档](/redoc/" + document.DocumentName + @")
 
-            //";
-            //        document.Description = linkDescription + config?.Description;
 
             document.PostProcess = (f) =>
             {
+                //var linkDescription = "# 相关文档链接  \r\n[ReDoc 文档](../redoc/" + document.DocumentName + ") | [Knife4UI 文档](../Knife4UI) | [SwaggerUi 文档](../Home/index.html?urls.primaryName=" + System.Uri.EscapeDataString(document.DocumentName) + ")\r\n---\r\n";
+                var linkDescription = "***相关文档链接***  \r\n[ReDoc 文档](../redoc/" + Common.ToBase64(document.DocumentName) + "?url=" + System.Uri.EscapeDataString(document.DocumentName) + ") | [Knife4UI 文档](../Knife4UI) | [SwaggerUi 文档](../Home/index.html?urls.primaryName=" + System.Uri.EscapeDataString(document.DocumentName) + ")  \r\n***\r\n";
+                f.Info.Description = linkDescription + config?.Description;
                 f.Info.TermsOfService = config?.TermsOfService;
                 f.Info.Contact = config?.Contact;
                 f.Info.License = config?.License;
-                f.ExternalDocumentation = new OpenApiExternalDocumentation { Description = "ReDoc 文档", Url = "/redoc/" + document.DocumentName };
+                //f.ExternalDocumentation = new OpenApiExternalDocumentation { Description = "ReDoc 文档", Url = "../redoc/" + document.DocumentName };
 
                 f.Info.ExtensionData = config?.ExtensionData;
                 //f.Info.TermsOfService = "http://www.weberp.com.cn";
