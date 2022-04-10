@@ -45,7 +45,7 @@ namespace SwaggerExtensions
             }
             return services;
         }
-        public static IApplicationBuilder UseNSwagSwaggerUI(this IApplicationBuilder app, string? pathMatch = "/swagger")
+        public static IApplicationBuilder UseNSwagSwaggerUI(this IApplicationBuilder app, string pathMatch = "/swagger")
         {
             if (string.IsNullOrWhiteSpace(pathMatch))
             {
@@ -154,12 +154,24 @@ namespace SwaggerExtensions
 
             return app;
         }
+
 #if NETCOREAPP3_0_OR_GREATER
-        public static void UseNSwagSwaggerUI(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder builder, string? pathMatch = null)
+        public static void UseNSwagSwaggerUI(this Microsoft.AspNetCore.Routing.IEndpointRouteBuilder builder, string pathMatch = null)
         {
             //ApplicationBuilder = { Microsoft.AspNetCore.Builder.ApplicationBuilder}
             if (builder == null) { throw new System.ArgumentNullException(nameof(builder)); }
             var app = builder.TryGetPropertyValue<IApplicationBuilder>("ApplicationBuilder");
+            if (app == null) { throw new System.ArgumentNullException(nameof(ApplicationBuilder)); }
+            app.UseNSwagSwaggerUI(pathMatch);
+        }
+#endif
+#if NET6_0_OR_GREATER
+        public static void UseNSwagSwaggerUI(this WebApplication builder, string pathMatch = null)
+        {
+            //ApplicationBuilder = {Microsoft.AspNetCore.Builder.ApplicationBuilder}
+            if (builder == null) { throw new System.ArgumentNullException(nameof(builder)); }
+            var applicationBuilderPropertyInfo = typeof(WebApplication).GetProperty("ApplicationBuilder", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var app = applicationBuilderPropertyInfo.GetValue(builder) as ApplicationBuilder;
             if (app == null) { throw new System.ArgumentNullException(nameof(ApplicationBuilder)); }
             app.UseNSwagSwaggerUI(pathMatch);
         }

@@ -19,7 +19,7 @@ namespace SwaggerExtensions
     {
         public static IApplicationBuilder UseReDocEx(this IApplicationBuilder app, Action<ReDocSettings> configure = null)
         {
-            ReDocSettings settings = ((configure != null) ? new ReDocSettings() : app.ApplicationServices.GetService<IOptions<ReDocSettings>>()?.Value);
+            var settings = ((configure != null) ? new ReDocSettings() : app.ApplicationServices.GetService<IOptions<ReDocSettings>>()?.Value);
             configure?.Invoke(settings);
             UseSwaggerUiWithDocumentNamePlaceholderExpanding(app, settings, delegate (string swaggerRoute, string swaggerUiRoute)
             {
