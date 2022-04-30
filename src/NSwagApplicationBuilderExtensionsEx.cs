@@ -17,9 +17,9 @@ namespace SwaggerExtensions
 {
     public static class NSwagApplicationBuilderExtensionsEx
     {
-        public static IApplicationBuilder UseReDocEx(this IApplicationBuilder app, Action<ReDocSettings> configure = null)
+        public static IApplicationBuilder UseReDocEx(this IApplicationBuilder app, Action<ReDocSettings>? configure = default)
         {
-            var settings = ((configure != null) ? new ReDocSettings() : app.ApplicationServices.GetService<IOptions<ReDocSettings>>()?.Value);
+            var settings = app.ApplicationServices.GetService<IOptions<ReDocSettings>>()?.Value ?? new ReDocSettings();
             configure?.Invoke(settings);
             UseSwaggerUiWithDocumentNamePlaceholderExpanding(app, settings, delegate (string swaggerRoute, string swaggerUiRoute)
             {
@@ -31,7 +31,7 @@ namespace SwaggerExtensions
                 });
                 var swaggerUiIndexMiddlewareType = Type.GetType("NSwag.AspNetCore.Middlewares.SwaggerUiIndexMiddleware,NSwag.AspNetCore");
                 //app.UseMiddleware<SwaggerUiIndexMiddleware>(
-                app.UseMiddleware(swaggerUiIndexMiddlewareType,
+                app.UseMiddleware(swaggerUiIndexMiddlewareType!,
                     new object[3]
                 {
                     swaggerUiRoute + "_index.html",
