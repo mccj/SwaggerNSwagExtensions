@@ -15,6 +15,7 @@
 		<PackageTags>Swagger,NSwag,OpenAPI,AspNetCore</PackageTags>
 		<RepositoryUrl>https://github.com/mccj/SwaggerNSwagExtensions.git</RepositoryUrl>
 		<PackageIcon>Icon.png</PackageIcon>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="IGeekFan.AspNetCore.Knife4jUI" Version="0.0.11" />
